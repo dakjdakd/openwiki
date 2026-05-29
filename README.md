@@ -1,5 +1,9 @@
 <div align="center">
 
+<p>
+  <img src="./public/logo.png" alt="" width="96" height="96" />
+</p>
+
 # OpenWiki
 
 ### Turn any GitHub repository into an AI-generated technical wiki.
@@ -19,6 +23,16 @@
 </div>
 
 ---
+
+## Preview
+
+The OpenWiki workspace is built around a single flow: paste a repository URL, wait for AI analysis, then explore the generated technical wiki.
+
+![OpenWiki home page](./public/%E9%A6%96%E9%A1%B5.png)
+
+![OpenWiki analyzing repository page](./public/Analyzing%20Repository.png)
+
+![OpenWiki platform preview](./public/Platform%20Preview.png)
 
 ## Why OpenWiki
 
@@ -93,6 +107,8 @@ The Overview page gives users a structured first pass through the repository:
 
 When a file is selected, the active AI tutor context is updated with that file path, explanation, and source preview.
 
+![OpenWiki overview page](./public/Overview.png)
+
 ### Guided learning route
 
 The Learn page turns the repository into a curriculum. Each lesson includes:
@@ -107,6 +123,8 @@ The Learn page turns the repository into a curriculum. Each lesson includes:
 - automatic movement to the next lesson
 
 This makes OpenWiki useful not only for analysis, but also for onboarding, self-study, code reviews, and technical interviews.
+
+![OpenWiki learning roadmap page](./public/learn.png)
 
 ### Context-aware AI tutor
 
@@ -135,6 +153,8 @@ The Business page treats a repository like a product. It generates:
 
 This is especially helpful when evaluating open-source projects, hackathon ideas, SaaS prototypes, AI tools, and developer platforms.
 
+![OpenWiki business analysis page](./public/business.png)
+
 ### Final report
 
 The Report page creates a clean project report containing:
@@ -147,6 +167,8 @@ The Report page creates a clean project report containing:
 - Markdown copy action
 
 PDF download is currently represented in the UI as a next-phase feature.
+
+![OpenWiki final report page](./public/Report.png)
 
 ---
 
@@ -303,6 +325,8 @@ openwiki/
 - Mermaid 11 for diagrams
 - Lucide React for icons
 - Motion and react-fast-marquee for UI motion
+
+![OpenWiki architecture workspace](./public/architecture.png)
 
 ### Backend
 

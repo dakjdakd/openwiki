@@ -53,10 +53,12 @@ export default function Architecture() {
   const [selectedModule, setSelectedModule] = useState<any>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [diagramReady, setDiagramReady] = useState(false); // true = diagram is showing
+  const [renderNonce, setRenderNonce] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const renderIdRef = useRef(0);
 
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 });
   const isDragging = useRef(false);
@@ -66,8 +68,8 @@ export default function Architecture() {
   const doRender = useCallback((arch: string) => {
     if (!arch || !svgContainerRef.current) return;
     const safe = 'flowchart TD\n' + sanitizeMermaid(arch);
-    svgContainerRef.current.innerHTML = '';
-    mermaid.render('architecture-diagram', safe)
+    const renderId = `architecture-diagram-${++renderIdRef.current}`;
+    mermaid.render(renderId, safe)
       .then(({ svg }) => {
         if (svgContainerRef.current) svgContainerRef.current.innerHTML = svg;
         setRenderError(null);
@@ -89,10 +91,10 @@ export default function Architecture() {
 
   // When diagramReady becomes true, render
   useEffect(() => {
-    if (diagramReady && architecture) {
+    if (diagramReady && !loading && architecture) {
       doRender(architecture);
     }
-  }, [diagramReady, architecture, doRender]);
+  }, [diagramReady, loading, architecture, renderNonce, doRender]);
 
   // --- Pan/Zoom ---
   const handleMouseDown = (e: MouseEvent) => {
@@ -114,17 +116,26 @@ export default function Architecture() {
 
   const handleMouseUp = () => { isDragging.current = false; };
 
-  const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const rect = containerRef.current!.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    setTransform(t => {
-      const ns = Math.min(Math.max(t.scale * delta, 0.2), 4);
-      return { scale: ns, x: mx - (ns / t.scale) * (mx - t.x), y: my - (ns / t.scale) * (my - t.y) };
-    });
-  };
+  useEffect(() => {
+    // Register non-passive wheel listener to allow preventDefault
+    const el = containerRef.current;
+    if (!el) return;
+
+    const wheelHandler = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      const rect = el.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      setTransform(t => {
+        const ns = Math.min(Math.max(t.scale * delta, 0.2), 4);
+        return { scale: ns, x: mx - (ns / t.scale) * (mx - t.x), y: my - (ns / t.scale) * (my - t.y) };
+      });
+    };
+
+    el.addEventListener('wheel', wheelHandler, { passive: false });
+    return () => el.removeEventListener('wheel', wheelHandler, { passive: false } as AddEventListenerOptions);
+  }, []);
 
   const zoomTo = (ratio: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -162,6 +173,7 @@ export default function Architecture() {
   // Clicking the center button — show the diagram (no API call, data already in store)
   const handleShowDiagram = () => {
     setDiagramReady(true);
+    setRenderNonce(n => n + 1);
   };
 
   // REGENERATE in toolbar — re-fetch from API
@@ -187,7 +199,11 @@ export default function Architecture() {
             if (block.startsWith('data: ')) {
               const data = JSON.parse(block.slice(6));
               if (data.error) throw new Error(data.error);
-              if (data.data) setWorkspaceData(data.data);
+              if (data.data) {
+                setWorkspaceData(data.data);
+                setDiagramReady(true); // auto-render after regenerate
+                setRenderNonce(n => n + 1);
+              }
             }
           }
         }
@@ -272,9 +288,15 @@ export default function Architecture() {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
           style={{ userSelect: 'none' }}
         >
+          <div
+            ref={svgContainerRef}
+            style={svgStyle}
+            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity ${
+              diagramReady ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
           {/* State 1: Empty — show center button */}
           {!diagramReady && !loading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 z-10">
@@ -299,7 +321,7 @@ export default function Architecture() {
 
           {/* State 2: Loading */}
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center z-20 bg-[#09090B]/80">
               <div className="text-[4rem] font-bold uppercase text-[#3F3F46] animate-pulse">GENERATING...</div>
             </div>
           )}
@@ -320,20 +342,13 @@ export default function Architecture() {
           )}
 
           {/* State 4: Diagram */}
-          {diagramReady && !loading && !renderError && (
+          {diagramReady && (
             <>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
                 <span className="text-[10px] text-[#3F3F46] uppercase tracking-widest font-bold">
                   Drag to pan · Scroll to zoom
                 </span>
               </div>
-
-              <div
-                ref={svgContainerRef}
-                style={svgStyle}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              />
-
               <div className="absolute top-3 right-3 flex flex-col gap-1 z-10" data-no-drag>
                 <button onClick={() => zoomTo(1.25)} className="w-8 h-8 bg-[#27272A] border border-[#3F3F46] text-[#A1A1AA] hover:text-[#FAFAFA] hover:border-[#DFE104] font-bold text-lg transition-colors">+</button>
                 <button onClick={() => zoomTo(0.8)} className="w-8 h-8 bg-[#27272A] border border-[#3F3F46] text-[#A1A1AA] hover:text-[#FAFAFA] hover:border-[#DFE104] font-bold text-lg transition-colors">−</button>

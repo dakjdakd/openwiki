@@ -54,10 +54,6 @@ export default function WorkspaceLayout() {
     );
   }
 
-  if (id !== 'demo' && !storeProject) {
-    return <Navigate to="/" replace />;
-  }
-
   // Active link styling function
   const navLinkClass = ({ isActive }: { isActive: boolean }) => 
     `block px-6 py-3 border-r-2 border-[#3F3F46] text-sm md:text-base font-bold uppercase tracking-tight transition-colors whitespace-nowrap ${

@@ -76,10 +76,10 @@ export default function Loading() {
           }
 
           if (data.step !== undefined) {
-             setCurrentStep(data.step);
+             setCurrentStep(Math.min(data.step, ANALYSIS_STEPS.length - 1));
           }
 
-          if (data.data && data.step === 6) {
+          if (data.data) {
              setWorkspaceData(data.data);
              eventSource?.close();
              setTimeout(() => {

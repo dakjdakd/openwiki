@@ -5,6 +5,9 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
+import Product from './pages/Product';
+import Docs from './pages/Docs';
+import GitHub from './pages/GitHub';
 import Loading from './pages/analyze/Loading';
 import WorkspaceLayout from './pages/workspace/Layout';
 import Overview from './pages/workspace/Overview';
@@ -18,6 +21,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/product" element={<Product />} />
+        <Route path="/docs" element={<Docs />} />
+        <Route path="/github" element={<GitHub />} />
         
         <Route path="/analyze/loading" element={<Loading />} />
 
