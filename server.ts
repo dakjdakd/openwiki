@@ -1,27 +1,29 @@
 import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
-import { GoogleGenAI, Type } from '@google/genai';
+import OpenAI from 'openai';
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL || 'https://api.deepseek.com',
 });
 
 async function generateWithRetry(params: any, maxRetries = 5) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await ai.models.generateContent(params);
+      return await client.chat.completions.create(params);
     } catch (error: any) {
-      const errStr = String(error) + JSON.stringify(error);
-      const isUnavailable = error?.status === 503 || error?.status === 'UNAVAILABLE' || errStr.includes('503') || errStr.includes('high demand') || errStr.includes('UNAVAILABLE') || error?.error?.code === 503 || error?.status === 429 || errStr.includes('429');
+      const errStr = String(error);
+      const isUnavailable =
+        error?.status === 503 ||
+        error?.status === 429 ||
+        errStr.includes('503') ||
+        errStr.includes('429') ||
+        errStr.includes('rate limit') ||
+        errStr.includes('internal server error');
       if (isUnavailable && attempt < maxRetries) {
         const delay = attempt * 3000;
-        console.warn(`Gemini API Unavailable, retrying in ${delay}ms... (Attempt ${attempt} of ${maxRetries})`);
+        console.warn(`DeepSeek API unavailable, retrying in ${delay}ms... (Attempt ${attempt} of ${maxRetries})`);
         await new Promise(res => setTimeout(res, delay));
         continue;
       }
@@ -118,18 +120,22 @@ async function startServer() {
 
       sendEvent({ step: 4, message: "Generating business analysis and AI Mentor Data..." });
 
-      // 5. Ask Gemini 3.5 Flash to generate the analysis
-      const systemInstruction = `
-You are an expert AI software architect, senior engineer, and business analyst.
+      // 5. Ask DeepSeek to generate the analysis
+      const systemInstruction = `You are an expert AI software architect, senior engineer, and business analyst.
 Your task is to analyze a GitHub repository based on its README, tech stack, and file tree.
 You must output a highly structured JSON object that completely replaces our mock data for this application.
 
-Ensure the "architecture" field is directly renderable using Mermaid syntax (flowchart TD).
+Ensure the "architecture" field is directly renderable using Mermaid flowchart syntax.
+CRITICAL Mermaid rules:
+- Node IDs must be simple alphanumeric with underscores only (no spaces, no special chars). Example: UserService NOT "User Service"
+- Arrow labels with | must be in double-quoted labels: A["label with | pipe"] --> B
+- Avoid special chars in labels; if needed, wrap label in ["..."] and escape | as \\|
+- Keep it simple: nodes, arrows, and minimal text
 All fields are required. Keep descriptions concise, "brutalist", and professional.
-      `;
 
-      const prompt = `
-Repository: ${owner}/${repo}
+IMPORTANT: You must respond with ONLY valid JSON, no markdown code blocks, no explanation, no text before or after the JSON.`;
+
+      const prompt = `Repository: ${owner}/${repo}
 Description: ${repoData.description || "N/A"}
 Tech Stack: ${techStack.join(', ')}
 
@@ -139,118 +145,91 @@ ${readmeStr.substring(0, 3000)}
 File Tree snippet:
 ${treePaths.join('\n').substring(0, 5000)}
 
-Respond with the exact JSON structure specified by the schema.
-      `;
+You must respond with valid JSON matching this schema:
+{
+  "summary": {
+    "summary": "<what the project does>",
+    "targetUser": "<who this is for>",
+    "coreFunctionality": "<core features>",
+    "entryFile": "<main entry file path>",
+    "dataFlow": "<request to response flow description>",
+    "startHere": ["<list of files to start reading>"]
+  },
+  "fileTree": [
+    {
+      "path": "<top-level path>",
+      "type": "file or directory",
+      "explanation": "<what this is>",
+      "importance": "high, medium, or low"
+    }
+  ],
+  "modules": [
+    {
+      "id": "<short-id>",
+      "name": "<module name>",
+      "files": "<file paths>",
+      "responsibility": "<what it does>",
+      "why": "<why it matters>",
+      "suggestion": "<learning direction>"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "<lesson-id>",
+      "title": "<lesson title>",
+      "goal": "<learning goal>",
+      "files": ["<files to read>"],
+      "why": "<why learn this>",
+      "focus": "<what to focus on>",
+      "questions": ["<check questions>"],
+      "exercise": "<exercise description>"
+    }
+  ],
+  "architecture": "<raw mermaid syntax, no markdown code blocks>",
+  "business": {
+    "positioning": "<elevator pitch>",
+    "problems": "<problems solved>",
+    "users": "<target users>",
+    "painPoints": "<user pain points>",
+    "coreValue": "<core value proposition>",
+    "competitors": [
+      {
+        "name": "<competitor name>",
+        "edge": "<our competitive advantage>"
+      }
+    ],
+    "model": "<business model>",
+    "mvp": "<minimum viable product>",
+    "growth": "<growth strategy>",
+    "risks": "<business risks>",
+    "future": "<future direction>"
+  }
+}`;
 
       const response = await generateWithRetry({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-        config: {
-          systemInstruction,
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              summary: {
-                type: Type.OBJECT,
-                properties: {
-                  summary: { type: Type.STRING },
-                  targetUser: { type: Type.STRING },
-                  coreFunctionality: { type: Type.STRING },
-                  entryFile: { type: Type.STRING },
-                  dataFlow: { type: Type.STRING },
-                  startHere: { type: Type.ARRAY, items: { type: Type.STRING } }
-                },
-                required: ["summary", "targetUser", "coreFunctionality", "entryFile", "dataFlow", "startHere"]
-              },
-              fileTree: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    path: { type: Type.STRING },
-                    type: { type: Type.STRING, description: "'file' or 'directory'" },
-                    explanation: { type: Type.STRING },
-                    importance: { type: Type.STRING, description: "'high', 'medium', or 'low'" }
-                  },
-                  required: ["path", "type", "explanation", "importance"]
-                },
-                description: "Return a top-level summary of the file tree. Limit to 5-10 key items, representing top-level folders or important config files. DON'T nest children for this."
-              },
-              modules: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    id: { type: Type.STRING },
-                    name: { type: Type.STRING },
-                    files: { type: Type.STRING },
-                    responsibility: { type: Type.STRING },
-                    why: { type: Type.STRING },
-                    suggestion: { type: Type.STRING }
-                  },
-                  required: ["id", "name", "files", "responsibility", "why", "suggestion"]
-                }
-              },
-              lessons: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    id: { type: Type.STRING },
-                    title: { type: Type.STRING },
-                    goal: { type: Type.STRING },
-                    files: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    why: { type: Type.STRING },
-                    focus: { type: Type.STRING },
-                    questions: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    exercise: { type: Type.STRING }
-                  },
-                  required: ["id", "title", "goal", "files", "why", "focus", "questions", "exercise"]
-                }
-              },
-              architecture: { type: Type.STRING, description: "A raw mermaid syntax string for the architecture diagram (no markdown code blocks, just raw syntax)." },
-              business: {
-                type: Type.OBJECT,
-                properties: {
-                  positioning: { type: Type.STRING },
-                  problems: { type: Type.STRING },
-                  users: { type: Type.STRING },
-                  painPoints: { type: Type.STRING },
-                  coreValue: { type: Type.STRING },
-                  competitors: {
-                    type: Type.ARRAY,
-                    items: {
-                      type: Type.OBJECT,
-                      properties: {
-                        name: { type: Type.STRING },
-                        edge: { type: Type.STRING }
-                      },
-                      required: ["name", "edge"]
-                    }
-                  },
-                  model: { type: Type.STRING },
-                  mvp: { type: Type.STRING },
-                  growth: { type: Type.STRING },
-                  risks: { type: Type.STRING },
-                  future: { type: Type.STRING }
-                },
-                required: ["positioning", "problems", "users", "painPoints", "coreValue", "competitors", "model", "mvp", "growth", "risks", "future"]
-              }
-            },
-            required: ["summary", "fileTree", "modules", "lessons", "architecture", "business"]
-          }
-        }
+        model: "deepseek-v4-pro",
+        messages: [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 8192,
       });
 
       sendEvent({ step: 5, message: "Validating AI response..." });
 
-      const analysisRaw = response.text;
+      const analysisRaw = response.choices[0]?.message?.content;
       if (!analysisRaw) {
         throw new Error("Failed to generate analysis from AI.");
       }
 
-      const generatedData = JSON.parse(analysisRaw);
+      // Strip markdown code blocks if any
+      let cleanJson = analysisRaw.trim();
+      if (cleanJson.startsWith('```')) {
+        cleanJson = cleanJson.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      }
+
+      const generatedData = JSON.parse(cleanJson);
 
       // add project info base
       const fullResponse = {
@@ -282,26 +261,39 @@ Respond with the exact JSON structure specified by the schema.
       const { question, context, history } = req.body;
       if (!question) return res.status(400).json({ error: "Question is required" });
 
-      const prompt = `
-You are a senior AI mentor explaining a software repository.
-Context of what the user is currently reading/learning:
-${context || 'General understanding'}
+      const systemInstruction = `You are a senior AI mentor explaining a software repository.
+Provide concise, direct answers focusing on guiding the user in code comprehension.`;
 
-Prior conversation history (if any):
-${JSON.stringify(history)}
+      const messages: any[] = [
+        { role: 'system', content: systemInstruction }
+      ];
 
-User Question:
-${question}
+      // Add conversation history
+      if (history && Array.isArray(history) && history.length > 0) {
+        history.forEach((h: any) => {
+          if (h.q) messages.push({ role: 'user', content: h.q });
+          if (h.a) messages.push({ role: 'assistant', content: h.a });
+        });
+      }
 
-Provide a concise, direct answer focusing on guiding the user in code comprehension.
-`;
+      // Add current context
+      const contextPrompt = context
+        ? `Context of what the user is currently reading/learning:\n${context}\n\n`
+        : '';
 
-      const response = await generateWithRetry({
-        model: "gemini-3.5-flash",
-        contents: prompt,
+      messages.push({
+        role: 'user',
+        content: `${contextPrompt}User Question:\n${question}`
       });
 
-      res.json({ answer: response.text });
+      const response = await generateWithRetry({
+        model: "deepseek-v4-pro",
+        messages,
+        temperature: 0.7,
+        max_tokens: 4096,
+      });
+
+      res.json({ answer: response.choices[0]?.message?.content || "No response" });
     } catch (error: any) {
       console.error(error);
       res.status(500).json({ error: error.message || "Failed to get tutor answer." });
@@ -316,7 +308,7 @@ Provide a concise, direct answer focusing on guiding the user in code comprehens
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const distPath = path.join(__dirname, '../dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));

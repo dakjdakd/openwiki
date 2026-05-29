@@ -44,7 +44,7 @@ const FileTreeNode = ({ node, level = 0, onSelect }: any) => {
 };
 
 export default function Overview() {
-  const { project, summary, fileTree, modules, activeContext, setActiveContext } = useWorkspaceStore();
+  const { project, summary, fileTree, modules, activeContext, setActiveContext, analysisEvidence } = useWorkspaceStore();
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [fileContent, setFileContent] = useState<string>('');
   const [loadingFile, setLoadingFile] = useState<boolean>(false);
@@ -162,6 +162,37 @@ export default function Overview() {
           </div>
         ) : (
           <>
+            {analysisEvidence && (
+              <details className="border border-[#3F3F46] mb-8" open>
+                <summary className="bg-[#27272A] px-4 py-3 cursor-pointer font-bold uppercase tracking-tight select-none">
+                  Analysis Evidence — {analysisEvidence.sampledFiles?.length ?? 0} files sampled
+                </summary>
+                <div className="p-4 space-y-2 bg-[#18181B]">
+                  {analysisEvidence.sampledFiles?.map((f: any) => (
+                    <div key={f.path} className="flex gap-4 text-xs font-mono items-start">
+                      <span className="text-[#DFE104] shrink-0 w-10 text-right">{f.chars}c</span>
+                      <span className="text-[#FAFAFA] truncate flex-1" title={f.path}>{f.path}</span>
+                      <span className="text-[#A1A1AA] italic shrink-0">{f.reason}</span>
+                    </div>
+                  ))}
+                  {analysisEvidence.skippedFiles?.length > 0 && (
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-[#71717A] text-xs uppercase hover:text-[#A1A1AA]">
+                        {analysisEvidence.skippedFiles.length} skipped files
+                      </summary>
+                      <div className="mt-2 space-y-1">
+                        {analysisEvidence.skippedFiles.map((f: any) => (
+                          <div key={f.path} className="text-xs text-[#52525B] font-mono ml-4 truncate">
+                            {f.path}: {f.reason}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </div>
+              </details>
+            )}
+
             <section>
               <h2 className="text-4xl font-bold uppercase tracking-tighter mb-8 border-b-2 border-[#3F3F46] pb-4">
                 Project Summary

@@ -8,6 +8,7 @@ interface WorkspaceState {
   lessons: any[];
   architecture: string;
   business: any;
+  analysisEvidence: any;
   setWorkspaceData: (data: any) => void;
   isLoading: boolean;
   setLoading: (loading: boolean) => void;
@@ -25,6 +26,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   lessons: [],
   architecture: '',
   business: null,
+  analysisEvidence: null,
   isLoading: false,
   error: null,
   activeContext: 'General Overview',
@@ -36,6 +38,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     lessons: data.lessons,
     architecture: data.architecture,
     business: data.business,
+    analysisEvidence: data.analysisEvidence,
   }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),

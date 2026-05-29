@@ -1,12 +1,58 @@
 import { Outlet, NavLink, useParams, Link, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { MOCK_PROJECT } from '../../mock/data';
 
 export default function WorkspaceLayout() {
   const { id } = useParams();
-  const { project: storeProject } = useWorkspaceStore();
+  const { project: storeProject, setWorkspaceData } = useWorkspaceStore();
   const project = storeProject || MOCK_PROJECT;
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  // When accessing a real project (non-demo), fetch from backend if store is empty
+  useEffect(() => {
+    if (id && id !== 'demo' && !storeProject) {
+      setLoading(true);
+      setLoadError(false);
+      fetch(`/api/project/${id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Project not found');
+          return res.json();
+        })
+        .then((data) => {
+          setWorkspaceData(data);
+        })
+        .catch(() => {
+          setLoadError(true);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [id, storeProject, setWorkspaceData]);
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-[#09090B] flex flex-col items-center justify-center gap-6">
+        <div className="text-4xl font-bold uppercase tracking-tighter text-[#DFE104]">
+          Project Not Found
+        </div>
+        <Link to="/" className="text-[#A1AAA] underline uppercase text-sm">
+          Return to Home
+        </Link>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+        <div className="text-2xl font-bold uppercase tracking-tighter text-[#DFE104] animate-pulse">
+          Loading project...
+        </div>
+      </div>
+    );
+  }
 
   if (id !== 'demo' && !storeProject) {
     return <Navigate to="/" replace />;

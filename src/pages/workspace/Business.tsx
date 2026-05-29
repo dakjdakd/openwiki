@@ -29,16 +29,29 @@ const CollapsibleSection = ({ title, defaultOpen = true, children }: any) => {
 
 export default function Business() {
   const { business, project } = useWorkspaceStore();
-  const [generated, setGenerated] = useState(false);
+  const [generated, setGenerated] = useState(!!business);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setLoading(true);
-    setTimeout(() => {
+    if (business) {
+      // If store already has business data, just reveal it (skip API)
+      // In a later version, this can call POST /api/project/:id/business to regenerate
       setLoading(false);
       setGenerated(true);
-    }, 400);
+      return;
+    }
+    // Fallback: call API if no business in store
+    try {
+      // This branch handles future regeneration endpoint
+      // For now, just reveal the placeholder state
+      setLoading(false);
+      setGenerated(true);
+    } catch {
+      setLoading(false);
+      setGenerated(true); // still show the section even on error
+    }
   };
 
   const handleCopy = () => {
