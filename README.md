@@ -1,12 +1,18 @@
 <div align="center">
 
+[English](./README.en.md)
+
 <p>
-  <img src="./public/logo.png" alt="" width="96" height="96" />
+  <img src="./public/logo.png" alt="OpenWiki Logo" width="96" height="96" />
 </p>
 
-# OpenWiki
+# OpenWiki 🧭
 
-### Turn any GitHub repository into an AI-generated technical wiki.
+---
+
+### 面向 GitHub 仓库理解的 AI 技术 Wiki 平台。
+
+OpenWiki 将一个公开 GitHub 仓库转化为可浏览、可追问、可复用的技术工作区：从代码摘要、文件脉络、架构图，到学习路线、业务分析和最终报告，帮助开发者更快建立项目全貌。
 
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
@@ -15,175 +21,127 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Mermaid](https://img.shields.io/badge/Diagrams-Mermaid_11-ff3670)](https://mermaid.js.org)
 [![AI](https://img.shields.io/badge/AI-OpenAI_Compatible-111827)](https://platform.openai.com/docs)
+[![License](https://img.shields.io/badge/License-%5BLicense%5D-lightgrey)](#许可证-)
 
-**Paste a GitHub URL. OpenWiki reads the repository, samples real source files, and generates a code summary, architecture diagram, learning path, AI tutor context, business analysis, and final report.**
-
-[Features](#features) | [Quick Start](#quick-start) | [How It Works](#how-it-works) | [Architecture](#architecture) | [API](#api) | [Roadmap](#roadmap)
+![OpenWiki Platform Preview](./public/Platform%20Preview.png)
 
 </div>
 
----
+<br>
 
-## Preview
+## 项目概览 🧩
 
-The OpenWiki workspace is built around a single flow: paste a repository URL, wait for AI analysis, then explore the generated technical wiki.
+OpenWiki 是一个 AI 驱动的 GitHub 仓库分析工具。用户粘贴仓库地址后，系统会读取仓库元数据、README、技术栈、文件树和关键源码样本，并生成结构化的技术 Wiki。
 
-![OpenWiki home page](./public/%E9%A6%96%E9%A1%B5.png)
+它适合开发者、技术写作者、学生、团队新人、开源项目维护者和产品评估者。相比只读 README 或手动翻目录，OpenWiki 更强调“带证据的理解”：它会展示哪些文件被采样、为什么重要，以及这些文件如何支撑最终分析。
 
-![OpenWiki analyzing repository page](./public/Analyzing%20Repository.png)
+> Tip  
+> 如果你只想最快跑起来，请直接查看“快速开始”。如果你想理解系统如何分析仓库，请从“工作原理”和“技术架构”开始。
 
-![OpenWiki platform preview](./public/Platform%20Preview.png)
+<br>
 
-## Why OpenWiki
+## 为什么做这个 💡
 
-Reading an unfamiliar repository is slow. You open the README, scan the file tree, guess where the real entry point is, jump between routes, stores, services, components, and tests, then try to rebuild the mental model in your head.
+理解一个陌生仓库通常很慢：README 只讲入口，文件树缺少语义，架构关系需要自己拼接，业务价值也很难从代码中直接看出来。
 
-OpenWiki turns that first hour of exploration into an interactive workspace:
+OpenWiki 试图把这段探索过程压缩成一个稳定流程：
 
-| What you need | What OpenWiki generates |
+| 常见问题 | OpenWiki 的处理方式 |
 | --- | --- |
-| Understand the project fast | A concise technical summary, target user, core functionality, entry file, and data flow |
-| See how the system is connected | A Mermaid architecture diagram with pan, zoom, copy, regenerate, and SVG export |
-| Know which files matter | An AI-explained file explorer and module breakdown |
-| Learn the codebase step by step | A lesson-based learning route with goals, files, questions, and exercises |
-| Ask follow-up questions | A context-aware AI tutor that uses the file or lesson you are viewing |
-| Evaluate the product potential | A business analysis covering users, positioning, competitors, risks, and growth |
-| Share the result | A polished final report page with copy-to-Markdown support |
+| 不知道项目从哪里读起 | 生成入口文件、核心模块和推荐阅读路径 |
+| 看不清系统如何连接 | 输出 Mermaid 架构图，并提供交互式查看 |
+| README 和真实代码不完全一致 | 采样关键源码，把采样证据展示给用户 |
+| 新人学习缺少节奏 | 生成分步骤课程、问题和练习 |
+| 需要判断项目价值 | 生成定位、用户、风险、增长和竞品分析 |
+| 想沉淀结果 | 生成可复制的项目报告 |
 
-OpenWiki is built for developers, AI engineers, founders, students, technical writers, and anyone who wants to understand a GitHub project without manually mapping every file.
+<br>
 
----
+## 核心功能 ✅
 
-## Features
+- **源码感知分析**：不只总结 README，还会获取仓库元数据、package 信息、递归文件树，并用启发式规则采样关键源码。
+- **结构化技术 Wiki**：生成项目摘要、目标用户、核心功能、数据流、模块说明、文件解释和学习路线。
+- **交互式架构图**：AI 输出 Mermaid，前端提供渲染、拖拽、缩放、复制、重新生成和 SVG 导出。
+- **AI Tutor 问答**：根据当前查看的文件、模块或课程上下文回答问题，适合边读边问。
+- **业务分析视角**：从产品定位、用户痛点、核心价值、竞品、商业模式、风险和增长方向审视仓库。
+- **最终报告页**：将技术与业务分析整理成更适合分享的报告，并支持复制为 Markdown。
+- **分析证据面板**：展示采样文件、采样原因、字符数和跳过文件，让分析过程更透明。
 
-### Source-aware repository analysis
+<br>
 
-OpenWiki does more than summarize a README. The backend fetches repository metadata, README content, package metadata, a recursive GitHub file tree, and then selects important source files using path-based heuristics.
+## 效果展示 📸
 
-The current analyzer prioritizes:
+![OpenWiki Home](./public/%E9%A6%96%E9%A1%B5.png)
 
-- README and package manifests
-- application entry points such as `src/main.*`, `src/App.*`, `server/index.*`, `app.*`, and `main.*`
-- routes, API layers, services, stores, controllers, handlers, models, and middleware
-- pages, components, source files, and framework configuration files
-- useful TypeScript, Vite, React, Express, and Tailwind signals
+首页聚焦一个动作：输入 GitHub 仓库地址并开始分析。
 
-Large generated folders and binary assets are skipped. Sampled files are capped to keep prompts stable:
+![OpenWiki Analyzing Repository](./public/Analyzing%20Repository.png)
 
-| Limit | Current behavior |
-| --- | --- |
-| Maximum selected files | up to 18 key files |
-| Maximum per file | 4,000 characters |
-| Maximum total sample budget | about 25,000 characters |
-| File tree snippet | first 500 files, capped in prompt |
-| README snippet | first 3,000 characters |
+分析页通过 Server-Sent Events 展示实时进度，让用户知道系统正在获取元数据、采样文件或调用 AI。
 
-The generated workspace includes an **Analysis Evidence** panel so users can see which files were sampled and why.
+![OpenWiki Overview](./public/Overview.png)
 
-### Interactive architecture workspace
+Overview 工作区集中展示项目摘要、文件树、采样证据、源码预览和 AI Tutor。
 
-The Architecture page renders AI-generated Mermaid syntax into an interactive diagram.
+![OpenWiki Architecture](./public/architecture.png)
 
-Core interactions:
+Architecture 页面将 Mermaid 图渲染为可拖拽、可缩放、可导出的架构画布。
 
-- click **Render Architecture** to render the existing analysis
-- drag to pan across the diagram
-- scroll to zoom
-- use toolbar controls for zoom, fit, copy Mermaid, regenerate, and export SVG
-- inspect AI-generated modules from the side panel
-- regenerate the architecture by re-running `/api/analyze`
+![OpenWiki Learn](./public/learn.png)
 
-The frontend also includes Mermaid sanitation for common AI formatting problems such as malformed `flowchart TD` headers and unsafe labels.
+Learn 页面将仓库转成学习路线，包含目标、阅读文件、关注点、问题和练习。
 
-### AI file explorer and module inspector
+![OpenWiki Business](./public/business.png)
 
-The Overview page gives users a structured first pass through the repository:
+Business 页面从产品和市场角度重新组织开源项目的信息。
 
-- generated file tree with importance markers
-- selected file explanation
-- live source preview from `raw.githubusercontent.com`
-- project summary, target user, core functionality, and data flow
-- core module cards with responsibilities, locations, reasoning, and recommendations
+![OpenWiki Report](./public/Report.png)
 
-When a file is selected, the active AI tutor context is updated with that file path, explanation, and source preview.
+Report 页面沉淀最终分析结果，适合复盘、分享或继续编辑。
 
-![OpenWiki overview page](./public/Overview.png)
+<br>
 
-### Guided learning route
+## 工作原理 ⚙️
 
-The Learn page turns the repository into a curriculum. Each lesson includes:
-
-- a clear goal
-- files to read
-- why those files matter
-- what to focus on
-- check questions
-- a hands-on exercise
-- completion tracking
-- automatic movement to the next lesson
-
-This makes OpenWiki useful not only for analysis, but also for onboarding, self-study, code reviews, and technical interviews.
-
-![OpenWiki learning roadmap page](./public/learn.png)
-
-### Context-aware AI tutor
-
-OpenWiki includes a lightweight tutor endpoint:
-
-```http
-POST /api/tutor
+```mermaid
+flowchart TD
+    A[用户输入 GitHub 仓库 URL] --> B[解析 owner 和 repo]
+    B --> C[获取仓库元数据]
+    C --> D[读取 README]
+    D --> E[识别语言与 package 技术栈]
+    E --> F[获取递归文件树]
+    F --> G[评分并选择关键源码文件]
+    G --> H[拉取源码样本]
+    H --> I[构造结构化 AI Prompt]
+    I --> J[调用 OpenAI 兼容模型]
+    J --> K[校验并归一化 JSON]
+    K --> L[写入内存项目存储]
+    L --> M[通过 SSE 返回进度和结果]
+    M --> N[前端渲染 Wiki 工作区]
 ```
 
-The tutor receives the user's question, active context, and optional chat history. The active context changes as the user browses files, modules, or lessons, so answers are grounded in the part of the codebase the user is currently studying.
+当前采样策略优先选择 README、`package.json`、应用入口、路由、服务层、状态管理、页面、组件和配置文件。生成目录、构建产物、二进制资源和过大的文件会被跳过。
 
-### Business intelligence
+| 限制项 | 当前行为 |
+| --- | --- |
+| 关键文件数量 | 最多 18 个 |
+| 单文件内容 | 最多 4,000 字符 |
+| 总采样预算 | 约 25,000 字符 |
+| README 片段 | 最多 3,000 字符 |
+| 文件树片段 | 前 500 个文件路径 |
 
-The Business page treats a repository like a product. It generates:
+<br>
 
-- positioning and elevator pitch
-- target users
-- solved problems and pain points
-- core value proposition
-- competitor landscape
-- possible business model
-- MVP direction
-- growth strategy
-- risks
-- future opportunities
+## 快速开始 🚀
 
-This is especially helpful when evaluating open-source projects, hackathon ideas, SaaS prototypes, AI tools, and developer platforms.
+### 环境要求
 
-![OpenWiki business analysis page](./public/business.png)
-
-### Final report
-
-The Report page creates a clean project report containing:
-
-- cover section
-- project metadata
-- technical overview
-- architecture and flow summary
-- business analysis
-- Markdown copy action
-
-PDF download is currently represented in the UI as a next-phase feature.
-
-![OpenWiki final report page](./public/Report.png)
-
----
-
-## Quick Start
-
-### Prerequisites
-
-- Node.js 20 or newer
+- Node.js 20 或更高版本
 - npm
-- an API key for DeepSeek or another OpenAI-compatible chat completion endpoint
-- optional but strongly recommended: a GitHub personal access token
+- DeepSeek 或其他 OpenAI 兼容模型服务的 API Key
+- 可选但推荐：GitHub Personal Access Token
 
-Anonymous GitHub API requests are limited to roughly 60 requests per hour. With `GITHUB_TOKEN`, the limit is much higher and analysis is more reliable for repeated use.
-
-### Installation
+### 安装
 
 ```bash
 git clone https://github.com/dakjdakd/openwiki.git
@@ -191,9 +149,9 @@ cd openwiki
 npm install
 ```
 
-### Environment variables
+### 配置
 
-Create a `.env` file in the project root:
+在项目根目录创建 `.env`：
 
 ```env
 OPENAI_API_KEY=sk-your-api-key
@@ -201,401 +159,231 @@ OPENAI_BASE_URL=https://api.deepseek.com
 GITHUB_TOKEN=github_pat_your-token-here
 ```
 
-`GITHUB_TOKEN` is optional, but recommended.
+`GITHUB_TOKEN` 不是必填项，但匿名 GitHub API 有较低频率限制；如果需要连续分析多个仓库，建议配置。
 
-### Development server
+### 启动
 
 ```bash
 npm run dev
 ```
 
-Open:
+打开：
 
 ```text
 http://localhost:3000
 ```
 
-Paste a public GitHub repository URL, for example:
+输入一个公开 GitHub 仓库地址，例如：
 
 ```text
 https://github.com/vercel/next.js
 ```
 
-Then start the analysis.
+<br>
 
----
+## 使用方式 🛠️
 
-## Commands
+### 分析一个仓库
 
-| Command | Description |
+1. 打开首页。
+2. 粘贴公开 GitHub 仓库 URL。
+3. 等待分析流程完成。
+4. 进入工作区查看 Overview、Architecture、Learn、Business 和 Report。
+
+### 查看架构图
+
+1. 打开工作区的 Architecture 页面。
+2. 点击 `RENDER ARCHITECTURE` 渲染已有图。
+3. 拖拽画布平移，滚轮缩放。
+4. 使用工具栏复制 Mermaid、重新生成或导出 SVG。
+
+### 向 AI Tutor 提问
+
+1. 在 Overview 中选择一个文件，或在 Learn 中查看一节课程。
+2. 右侧 AI Tutor 会自动获得当前上下文。
+3. 输入问题，例如“我应该先读哪个文件？”或“这个模块和 API 路由是什么关系？”。
+
+### 常用命令
+
+| 命令 | 说明 |
 | --- | --- |
-| `npm run dev` | Start the Express + Vite development server on port `3000` |
-| `npm run build` | Build the Vite frontend and bundle the server with esbuild |
-| `npm run start` | Run the production server from `dist/server.cjs` |
-| `npm run lint` | Run TypeScript type checking with `tsc --noEmit` |
-| `npm run preview` | Start Vite preview |
+| `npm run dev` | 启动 Express + Vite 开发服务器，默认端口 `3000` |
+| `npm run build` | 构建 Vite 前端，并用 esbuild 打包服务端 |
+| `npm run start` | 从 `dist/server.cjs` 启动生产服务 |
+| `npm run lint` | 使用 `tsc --noEmit` 执行 TypeScript 检查 |
+| `npm run preview` | 启动 Vite preview |
 
----
+<br>
 
-## How It Works
+## 配置说明 🧰
 
-```mermaid
-flowchart TD
-    A[User pastes GitHub URL] --> B[Parse owner and repo]
-    B --> C[Fetch repository metadata]
-    C --> D[Fetch README]
-    D --> E[Detect tech stack from language and package.json]
-    E --> F[Fetch recursive GitHub file tree]
-    F --> G[Score and select key source files]
-    G --> H[Fetch sampled file contents]
-    H --> I[Build structured AI prompt]
-    I --> J[Call OpenAI-compatible model]
-    J --> K[Normalize JSON response]
-    K --> L[Store workspace data in memory]
-    L --> M[Stream progress and final data to frontend]
-    M --> N[Render interactive workspace]
-```
+| 配置项 | 必填 | 默认值 | 作用 |
+| --- | --- | --- | --- |
+| `OPENAI_API_KEY` | 是 | 无 | 调用 OpenAI 兼容模型服务 |
+| `OPENAI_BASE_URL` | 否 | `https://api.deepseek.com` | 指定模型服务地址 |
+| `GITHUB_TOKEN` | 否 | 无 | 提高 GitHub API 额度，降低请求失败概率 |
 
-The analysis endpoint uses Server-Sent Events, so the loading page can display live progress while the backend moves through each step:
-
-| Step | Meaning |
-| --- | --- |
-| `0` | Fetching repository metadata |
-| `1` | Parsing README |
-| `2` | Detecting tech stack |
-| `3` | Fetching file tree |
-| `4` | Sampling key source files |
-| `5` | Running AI analysis |
-| `6` | Validating response |
-| `7` | Finalizing data |
-
----
-
-## Architecture
-
-OpenWiki is intentionally small and easy to modify. The app has a React frontend, an Express backend, an in-memory project store, and a thin AI service wrapper.
-
-```text
-openwiki/
-|-- server/
-|   |-- index.ts                 # Express app, Vite middleware, route mounting
-|   |-- routes/
-|   |   |-- analyze.ts            # GET /api/analyze SSE analysis stream
-|   |   `-- project.ts            # project lookup, business regeneration, tutor route
-|   |-- services/
-|   |   |-- analyzer.ts           # GitHub fetch, file scoring, sampling, AI orchestration
-|   |   |-- ai.ts                 # OpenAI-compatible client, JSON mode, retry logic
-|   |   `-- github.ts             # GitHub URL parsing and token-injected fetch
-|   |-- store/
-|   |   `-- projectStore.ts       # in-memory project cache
-|   `-- types/
-|       `-- index.ts              # shared data and API types
-|-- src/
-|   |-- App.tsx                  # React Router routes
-|   |-- main.tsx                 # React entry
-|   |-- pages/
-|   |   |-- Home.tsx              # repository input and landing experience
-|   |   |-- analyze/Loading.tsx   # SSE-driven loading screen
-|   |   `-- workspace/
-|   |       |-- Layout.tsx         # workspace shell and navigation
-|   |       |-- Overview.tsx       # summary, evidence, file explorer, tutor
-|   |       |-- Architecture.tsx   # Mermaid rendering, pan, zoom, export
-|   |       |-- Learn.tsx          # lesson roadmap and tutor
-|   |       |-- Business.tsx       # business intelligence sections
-|   |       `-- Report.tsx         # final report page
-|   |-- components/
-|   |   |-- home/                 # home page sections
-|   |   |-- layout/               # navbar and footer
-|   |   `-- ui/                   # Button, Card, Input primitives
-|   |-- store/
-|   |   `-- workspaceStore.ts     # Zustand single source of truth
-|   `-- mock/
-|       `-- data.ts               # demo workspace data
-|-- package.json
-|-- tsconfig.json
-`-- vite.config.ts
-```
-
-### Frontend
-
-- React 19
-- React Router 7
-- Zustand for workspace state
-- Tailwind CSS 4
-- Mermaid 11 for diagrams
-- Lucide React for icons
-- Motion and react-fast-marquee for UI motion
-
-![OpenWiki architecture workspace](./public/architecture.png)
-
-### Backend
-
-- Express 4
-- TypeScript
-- `tsx` for development
-- GitHub REST API
-- OpenAI SDK configured for an OpenAI-compatible endpoint
-- JSON mode through `response_format: { type: "json_object" }`
-- retry handling for rate limits and temporary API failures
-
----
-
-## API
-
-### `GET /api/analyze`
-
-Runs a complete repository analysis and streams progress through SSE.
-
-Query:
-
-| Name | Required | Description |
-| --- | --- | --- |
-| `url` | yes | Public GitHub repository URL |
-
-Example:
-
-```http
-GET /api/analyze?url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js
-```
-
-SSE events return either progress:
-
-```json
-{
-  "step": 4,
-  "message": "Sampling key source files..."
-}
-```
-
-or final workspace data:
-
-```json
-{
-  "step": 7,
-  "data": {
-    "project": {},
-    "summary": {},
-    "fileTree": [],
-    "modules": [],
-    "lessons": [],
-    "architecture": "flowchart TD\\n...",
-    "business": {},
-    "analysisEvidence": {}
-  }
-}
-```
-
-### `GET /api/project/:id`
-
-Returns cached workspace data for an analyzed repository.
-
-### `GET /api/project/:id/status`
-
-Returns the current status and step for an analyzed repository.
-
-### `POST /api/project/:id/business`
-
-Regenerates the business analysis section for a cached project.
-
-### `POST /api/tutor`
-
-Asks the AI tutor a context-aware question.
-
-Body:
-
-```json
-{
-  "question": "Where should I start reading this repository?",
-  "context": "Viewing File: src/App.tsx...",
-  "history": []
-}
-```
-
-Response:
-
-```json
-{
-  "answer": "Start with the router and then follow..."
-}
-```
-
----
-
-## Data Model
-
-The AI returns a structured workspace object:
-
-```ts
-interface WorkspaceData {
-  project: Project;
-  summary: Summary;
-  fileTree: TreeNode[];
-  modules: Module[];
-  lessons: Lesson[];
-  architecture: string;
-  business: Business;
-  analysisEvidence: AnalysisEvidence;
-}
-```
-
-Important generated sections:
-
-| Field | Purpose |
-| --- | --- |
-| `summary` | human-readable project summary, users, entry point, data flow, start-here list |
-| `fileTree` | AI-explained repository files and importance |
-| `modules` | architectural modules with responsibility and recommendations |
-| `lessons` | learning route for understanding the project |
-| `architecture` | raw Mermaid syntax |
-| `business` | product and market analysis |
-| `analysisEvidence` | sampled files and skipped files used during analysis |
-
----
-
-## Configuration Notes
-
-### Model provider
-
-By default, the project is configured for DeepSeek:
-
-```env
-OPENAI_BASE_URL=https://api.deepseek.com
-```
-
-Because the backend uses the OpenAI SDK, you can point `OPENAI_BASE_URL` to another OpenAI-compatible provider as long as the selected model supports chat completions and JSON responses.
-
-The current analysis model is set in code as:
+当前分析模型在 `server/services/analyzer.ts` 中配置为：
 
 ```ts
 model: "deepseek-v4-flash"
 ```
 
-### GitHub access
+后端通过 OpenAI SDK 访问兼容接口，并在 JSON 模式下请求结构化结果。项目分析结果目前保存在内存中，服务重启后会清空。
 
-OpenWiki fetches public repository data through GitHub APIs. For repeated analysis, add:
+<br>
 
-```env
-GITHUB_TOKEN=github_pat_your-token-here
+## 技术架构 🧱
+
+OpenWiki 由 React 前端、Express 后端、内存项目存储、GitHub 服务和 AI 服务组成。整体设计偏轻量，便于继续扩展持久化、OAuth、报告导出和更多分析模板。
+
+```text
+openwiki/
+|-- server/
+|   |-- index.ts                 # Express 应用、Vite 中间件、路由挂载
+|   |-- routes/
+|   |   |-- analyze.ts            # GET /api/analyze，SSE 分析流
+|   |   `-- project.ts            # 项目读取、业务分析再生成、Tutor 路由
+|   |-- services/
+|   |   |-- analyzer.ts           # GitHub 获取、文件评分、采样、AI 编排
+|   |   |-- ai.ts                 # OpenAI 兼容客户端、JSON 模式、重试逻辑
+|   |   `-- github.ts             # GitHub URL 解析与 token 注入 fetch
+|   |-- store/
+|   |   `-- projectStore.ts       # 内存项目缓存
+|   `-- types/
+|       `-- index.ts              # 共享类型
+|-- src/
+|   |-- App.tsx                   # React Router 路由
+|   |-- main.tsx                  # React 入口
+|   |-- pages/
+|   |   |-- Home.tsx              # 首页与仓库输入
+|   |   |-- analyze/Loading.tsx   # SSE 驱动的分析进度页
+|   |   `-- workspace/
+|   |       |-- Layout.tsx         # 工作区外壳
+|   |       |-- Overview.tsx       # 摘要、证据、文件树、Tutor
+|   |       |-- Architecture.tsx   # Mermaid 渲染、平移、缩放、导出
+|   |       |-- Learn.tsx          # 学习路线
+|   |       |-- Business.tsx       # 业务分析
+|   |       `-- Report.tsx         # 最终报告
+|   |-- components/
+|   |-- store/workspaceStore.ts   # Zustand 工作区状态
+|   `-- mock/data.ts              # Demo 数据
+|-- public/                       # Logo 与产品截图
+|-- package.json
+|-- tsconfig.json
+`-- vite.config.ts
 ```
 
-This token is injected into GitHub requests by the backend service.
+### 主要技术栈
 
-### Storage
+| 层级 | 技术 |
+| --- | --- |
+| 前端 | React 19、React Router 7、Tailwind CSS 4、Zustand、Mermaid、Lucide React |
+| 后端 | Express 4、TypeScript、tsx、esbuild |
+| AI | OpenAI SDK、OpenAI 兼容接口、JSON mode |
+| 数据来源 | GitHub REST API、raw.githubusercontent.com |
+| 状态存储 | 浏览器 Zustand + 服务端内存缓存 |
 
-Project analysis data is currently stored in memory. Restarting the server clears analyzed projects. This keeps the MVP simple and easy to inspect.
+### API
 
----
+| 接口 | 方法 | 说明 |
+| --- | --- | --- |
+| `/api/analyze?url=` | `GET` | 通过 SSE 运行完整仓库分析 |
+| `/api/project/:id` | `GET` | 获取已缓存项目数据 |
+| `/api/project/:id/status` | `GET` | 获取分析状态 |
+| `/api/project/:id/business` | `POST` | 重新生成业务分析 |
+| `/api/tutor` | `POST` | 基于上下文向 AI Tutor 提问 |
+| `/api/health` | `GET` | 服务健康检查 |
 
-## Use Cases
+<br>
 
-- Quickly understand an unfamiliar open-source repository
-- Generate onboarding material for a team
-- Explore architecture before contributing to a project
-- Create a learning roadmap for students or junior developers
-- Evaluate whether a repository has product or startup potential
-- Prepare for code review, technical interviews, or implementation planning
-- Turn GitHub repositories into readable technical notes
+## 路线图 🗺️
 
----
+已完成：
 
-## Roadmap
+- GitHub 仓库元数据、README、文件树和关键源码采样
+- 基于 SSE 的分析进度流
+- AI 生成摘要、模块、课程、架构图和业务分析
+- Mermaid 架构图渲染、复制、重新生成和 SVG 导出
+- Overview 文件树、源码预览和分析证据面板
+- AI Tutor 问答
+- 最终报告页
 
-Completed:
+计划中：
 
-- source-aware repository analysis
-- key source file sampling
-- live SSE progress during analysis
-- AI-generated summaries, modules, lessons, architecture, and business analysis
-- interactive Mermaid architecture rendering
-- pan, zoom, copy, regenerate, and SVG export for diagrams
-- context-aware tutor route
-- final report page
-- analysis evidence panel
+- 报告 PDF 导出
+- 分析结果持久化存储
+- 缓存与增量重新分析
+- 更强的 Mermaid 校验和修复
+- GitHub OAuth 与私有仓库支持
+- 分支、提交或 PR 之间的差异分析
+- 多仓库对比
+- Docker 与部署指南
 
-Planned:
+<br>
 
-- real PDF export for final reports
-- persistent storage for analyzed projects
-- cached and incremental re-analysis
-- richer Mermaid validation and repair
-- private repository support through GitHub OAuth
-- diff analysis between two commits or branches
-- multi-repository comparison
-- plugin-style custom analysis templates
-- deployment guide and Docker support
+## 常见问题 ❓
 
----
+### 为什么需要 `OPENAI_API_KEY`？
 
-## Contributing
+OpenWiki 的核心分析由 OpenAI 兼容模型生成。没有 API Key 时，后端无法完成仓库分析、业务分析再生成和 Tutor 问答。
 
-OpenWiki is a compact project, which makes it a good place to experiment with AI-assisted code understanding.
+### 可以分析私有仓库吗？
 
-Good areas to improve:
+当前主要面向公开 GitHub 仓库。私有仓库需要 OAuth 或更完整的 token 权限流程，属于后续路线图。
 
-- file scoring and source sampling in `server/services/analyzer.ts`
-- Mermaid cleanup and diagram rendering in `src/pages/workspace/Architecture.tsx`
-- tutor memory and conversation history
-- report export and Markdown generation
-- persistent project storage
-- better error states for GitHub and AI provider failures
-- tests for analyzer normalization and GitHub URL parsing
+### 为什么建议配置 `GITHUB_TOKEN`？
 
-Recommended workflow:
+匿名 GitHub API 请求额度较低，连续分析多个仓库时容易触发限制。配置 token 可以显著提高稳定性。
+
+### Mermaid 图渲染失败怎么办？
+
+AI 可能偶尔生成不合法的 Mermaid。可以先点击重新生成，也可以复制 Mermaid 文本手动检查；代码中的 `sanitizeMermaid()` 已处理部分常见格式问题。
+
+### 分析结果为什么不够深？
+
+当前采样策略为了控制上下文长度和请求成本，会限制文件数量和字符数。可以在 `server/services/analyzer.ts` 中调整 `MAX_TOTAL_CHARS`、`MAX_FILE_CHARS` 和采样数量。
+
+<br>
+
+## 贡献指南 🤝
+
+欢迎围绕真实使用体验改进 OpenWiki。比较适合入手的方向包括：
+
+- 改进 `server/services/analyzer.ts` 中的文件评分和采样策略
+- 增强 `src/pages/workspace/Architecture.tsx` 的 Mermaid 清洗与渲染稳定性
+- 为 GitHub URL 解析、分析结果归一化和 API 错误处理补测试
+- 增加持久化存储、报告导出和更清晰的错误状态
+- 改进英文文案、截图、使用示例和部署文档
+
+建议提交前执行：
 
 ```bash
-npm install
 npm run lint
 npm run build
 ```
 
----
+<br>
 
-## Troubleshooting
+## 许可证 📄
 
-### `OPENAI_API_KEY is missing`
+`[License]`
 
-Create `.env` in the project root and add:
+当前仓库没有独立的 `LICENSE` 文件。发布前建议补充明确许可证；代码文件中存在 `Apache-2.0` SPDX 标记，但项目级授权仍应以仓库根目录许可证文件为准。
 
-```env
-OPENAI_API_KEY=sk-your-api-key
-```
+<br>
 
-Then restart the dev server.
+## 维护者信息 📬
 
-### GitHub rate limit errors
-
-Add a GitHub token:
-
-```env
-GITHUB_TOKEN=github_pat_your-token-here
-```
-
-Then restart the dev server.
-
-### Mermaid diagram fails to render
-
-The AI may occasionally return invalid Mermaid syntax. Try:
-
-- clicking **Regenerate**
-- copying the Mermaid text and checking the syntax
-- improving `sanitizeMermaid()` in `src/pages/workspace/Architecture.tsx`
-
-### Analysis feels too shallow
-
-The current sampler intentionally limits source size to control token usage. Increase `MAX_TOTAL_CHARS`, `MAX_FILE_CHARS`, or the selected file count in `server/services/analyzer.ts` if your model context window and budget allow it.
-
----
-
-## License
-
-No license file is currently included in this repository. Add a `LICENSE` file before publishing if you want to make the reuse terms explicit.
-
----
+| 项目 | 信息 |
+| --- | --- |
+| 仓库 | [dakjdakd/openwiki](https://github.com/dakjdakd/openwiki) |
+| 维护者 | `[Maintainer]` |
+| 文档 | `[Docs URL]` |
+| 社区 | `[Community URL]` |
 
 <div align="center">
 
-**OpenWiki helps you read real code, not just READMEs.**
-
-If this project helps you understand a repository faster, consider starring it on GitHub.
+**OpenWiki 让读懂一个仓库，从猜测变成有证据的探索。**
 
 </div>
